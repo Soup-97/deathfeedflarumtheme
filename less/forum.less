@@ -178,10 +178,19 @@ a {
 }
 
 /* ---- Hero banner -- same rounded/responsive-max-width treatment as
-   afrux's Asirem theme (less/forum/Hero.less), styled with Deathfeed's own
-   radial blue/violet glow (index.css's `radial-gradient(circle at 50% 0%,
-   #1e1b4b ...)`) instead of a background-image banner, and Killboard's
-   actual hero card border (DesignPreviewPage.tsx: rounded-2xl, border-dark-700). */
+   afrux's Asirem theme (less/forum/Hero.less), and now the EXACT same
+   background image + scrim as Killboard's own hero (DesignPreviewPage.tsx:
+   heroBackground = assets/backgrounds/block1.png, scrim =
+   linear-gradient(to bottom, rgba(13,17,23,0.55) 0%, rgba(13,17,23,0.85) 100%)),
+   with the blue/violet radial glow layered on top. The image itself is
+   shipped in this extension's own assets/ folder (docs.flarum.org/extend/assets:
+   anything under assets/ at the extension root is auto-published to
+   /assets/extensions/EXTENSION_ID/...) rather than linked to Killboard's own
+   Vite build output, whose asset filenames are content-hashed and would break
+   on Killboard's next rebuild. EXTENSION_ID is derived from this package's
+   composer name (deathfeed/flarum-ext-theme) the same way
+   flarum-webpack-config's own extensionId.cjs does it:
+   name.replace('/flarum-ext-', '-') -> "deathfeed-theme". */
 .Hero {
   margin: 15px auto 0;
   max-width: @screen-desktop-hd;
@@ -189,8 +198,13 @@ a {
   border: 1px solid var(--deathfeed-dark-700);
   overflow: hidden;
   background-color: var(--deathfeed-dark-800);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: auto, auto, auto, cover;
   background-image: radial-gradient(circle at 50% 0%, rgba(96, 165, 250, 0.18) 0%, transparent 55%),
-                     radial-gradient(circle at 100% 100%, rgba(192, 132, 252, 0.12) 0%, transparent 50%);
+                     radial-gradient(circle at 100% 100%, rgba(192, 132, 252, 0.12) 0%, transparent 50%),
+                     linear-gradient(to bottom, rgba(13, 17, 23, 0.55) 0%, rgba(13, 17, 23, 0.85) 100%),
+                     url('/assets/extensions/deathfeed-theme/hero-bg.png');
 
   @media @tablet {
     max-width: @screen-tablet;

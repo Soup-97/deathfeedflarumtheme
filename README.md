@@ -43,8 +43,14 @@ pattern as any other Flarum extension update:
 ```sh
 cd /var/www/html
 composer update deathfeed/flarum-ext-theme
+php flarum assets:publish
 php flarum cache:clear
 ```
+
+`assets:publish` matters specifically since the hero's background image
+(`assets/hero-bg.png`, served at `/assets/extensions/deathfeed-theme/...`) is only guaranteed
+to be re-copied to the public assets directory on enable or on that command -- a bare
+`composer update` while the extension is already enabled doesn't reliably re-publish it.
 
 ## Developing the JS (changing the hero)
 
@@ -68,7 +74,12 @@ has to already be in the repo.
 - `.DiscussionListItem`, `.Post`, `.Dropdown-menu`, `.Modal-content` -- glass-card treatment.
 - `.DiscussionListItem-title` / `.DiscussionListItem-info` / `.item-excerpt` / `.stickyDiscussion`
   -- finer-grained discussion list card detail, sticky discussions get Deathfeed's gold tint.
-- `.Hero` -- rounded banner card with Deathfeed's own blue/violet radial glow.
+- `.Hero` -- rounded banner card using the exact same background image + scrim as Killboard's own
+  hero (`assets/backgrounds/block1.png` + `linear-gradient(to bottom, rgba(13,17,23,0.55) 0%,
+  rgba(13,17,23,0.85) 100%)`), with Deathfeed's blue/violet radial glow layered on top. The image
+  is shipped in this extension's own `assets/` folder (Flarum's built-in mechanism, auto-published
+  to `/assets/extensions/deathfeed-theme/...`) rather than linked to Killboard's own build output,
+  whose filenames are content-hashed and would break on its next rebuild.
 - `.sideNav` -- rounded pill tag/nav items with the same active-state neon-blue glow as
   Layout.tsx's navbar pills.
 - Links, unread badges, tags -- neon-blue/violet/green accents.
