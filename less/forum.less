@@ -430,73 +430,103 @@ h1, h2, h3, h4 {
   margin-bottom: 24px;
 }
 
-/* ---- MagicSlider (forumaker/magicslider) -- restyled to match the .Hero
-   banner treatment above: rounded glass card with a dark-800 fallback
-   (visible while an image loads/between slides) instead of the plain
-   default, circular icon-button arrows matching Layout.tsx's account/search
-   buttons (w-9 h-9 rounded-full bg-dark-800 border border-dark-700), and
-   pill dots with a neon-blue active glow instead of a flat white dot.
-   Class names verified against forumaker/magicslider's
-   js/src/forum/components/MagicSlider.tsx. */
-.MagicSlider {
-  border-radius: 1.125rem;
-  overflow: hidden;
-  border: 1px solid var(--deathfeed-dark-700);
-  background: var(--deathfeed-dark-800);
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+/* ---- DeathfeedHero (js/src/forum/components/DeathfeedHero.tsx) -- replaces MagicSlider
+   entirely: a custom Hero matching deathfeed.com's own homepage hero (DesignPreviewPage.tsx)
+   copy/layout/colors exactly, including live "today" stats fetched client-side from Killboard's
+   own API. Wrapped in .Hero/.container by the component itself, so the rounded glass card +
+   radial glow from the .Hero rules above already apply -- this is just the inner content. */
+.DeathfeedHero .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.25rem;
 }
 
-.MagicSlide-image {
-  object-fit: cover;
-}
-
-.MagicSlide {
-  background: var(--deathfeed-dark-800);
-}
-
-.MagicSlider-btn {
-  width: 36px;
-  height: 36px;
+.DeathfeedHero-badge {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--deathfeed-neon-violet);
+  border: 1px solid rgba(192, 132, 252, 0.3);
   border-radius: 9999px;
-  background: rgba(13, 17, 23, 0.7);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.25rem 0.75rem;
+}
+
+.DeathfeedHero-title {
+  max-width: 48rem;
+  font-size: 2.5rem;
+  line-height: 1.15;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.DeathfeedHero-title-accent {
+  color: var(--deathfeed-neon-blue);
+  text-shadow: 0 0 24px rgba(96, 165, 250, 0.35);
+}
+
+.DeathfeedHero-subtitle {
+  max-width: 36rem;
+  color: var(--muted-color);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.DeathfeedHero-stats {
   display: flex;
   align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
   justify-content: center;
-  transition: background-color 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-
-  &:hover {
-    background: rgba(96, 165, 250, 0.2);
-    border-color: rgba(96, 165, 250, 0.4);
-    box-shadow: 0 0 12px rgba(96, 165, 250, 0.3);
-  }
+  margin-top: 0.5rem;
 }
 
-.MagicSlider-btnVisual {
-  color: #e2e8f0;
-}
-
-.MagicSlider-dots {
+.DeathfeedHero-stat {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 0.125rem;
 }
 
-.MagicSlider-dots .dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.25);
-  transition: background-color 0.2s ease, box-shadow 0.2s ease, width 0.2s ease;
+.DeathfeedHero-stat-divider {
+  width: 1px;
+  height: 2rem;
+  background: var(--deathfeed-dark-600);
+}
 
-  &:hover {
-    background: rgba(255, 255, 255, 0.5);
+.DeathfeedHero-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.DeathfeedHero-stat-value--blue {
+  color: var(--deathfeed-neon-blue);
+}
+
+.DeathfeedHero-stat-value--gold {
+  color: var(--deathfeed-neon-gold);
+}
+
+.DeathfeedHero-stat-value--red {
+  color: #f87171;
+}
+
+.DeathfeedHero-stat-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+}
+
+@media @tablet {
+  .DeathfeedHero-title {
+    font-size: 1.875rem;
   }
-}
-
-.MagicSlider-dots .dot.is-active {
-  background: var(--deathfeed-neon-blue);
-  box-shadow: 0 0 8px rgba(96, 165, 250, 0.6);
-  width: 20px;
 }

@@ -1,0 +1,16 @@
+{
+  "name": "@deathfeed/flarum-ext-theme",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "webpack --mode development --watch",
+    "build": "webpack --mode production"
+  },
+  "devDependencies": {
+    "flarum-tsconfig": "^2.0.0",
+    "flarum-webpack-config": "^3.0.4",
+    "typescript": "^5.4.5",
+    "webpack": "^5.90.0",
+    "webpack-cli": "^5.1.4"
+  }
+}

@@ -1,11 +1,21 @@
 # Deathfeed Theme for Flarum
 
-A pure CSS/LESS Flarum extension that themes the forum to match [deathfeed.com](https://deathfeed.com)'s
-own neon-glass dark design: same dark-900 background + radial glow, same neon-blue/violet/green/gold
+A Flarum extension that themes the forum to match [deathfeed.com](https://deathfeed.com)'s own
+neon-glass dark design: same dark-900 background + radial glow, same neon-blue/violet/green/gold
 accents, same Poppins font, same glass-card and pill-button treatment used across the site's React
 frontend (`src/index.css`, `Layout.tsx`, `AlbionBackdrop.tsx`).
 
-No JS build step -- Flarum compiles LESS server-side, so this is just `extend.php` + one `.less` file.
+Two parts:
+- **CSS/LESS** (`less/forum.less`) -- Flarum compiles this server-side, no build step.
+- **JS** (`js/src/forum/`) -- replaces Flarum's default WelcomeHero with a custom hero that
+  matches deathfeed.com's own homepage hero exactly (same headline/subtitle copy, same layout),
+  including live "Kills Today" / "Loot Today" / "Active PvP Players Today" stats fetched
+  client-side from Killboard's own `/api/local/stats` (CORS is already wide open there, no
+  backend proxy needed). This replaces the [MagicSlider](https://github.com/forumaker/magicslider)
+  extension entirely -- **disable/uninstall MagicSlider in Admin > Extensions** once this is
+  live, since both override the same hero and having both active means whichever loads last wins.
+  `js/dist/forum.js` is committed pre-built (`npm run build` was already run), so installing
+  this extension only needs Composer -- no Node inside the Flarum container.
 
 ## Installing on your running Flarum instance (Coolify / Docker)
 
@@ -35,6 +45,18 @@ cd /var/www/html
 composer update deathfeed/flarum-ext-theme
 php flarum cache:clear
 ```
+
+## Developing the JS (changing the hero)
+
+```sh
+cd js
+npm install
+npm run build   # or `npm run dev` to watch
+```
+
+Commit both `js/src/` and the rebuilt `js/dist/forum.js` -- the container installing this
+extension never runs `npm install`/`npm run build` itself, only Composer, so the compiled output
+has to already be in the repo.
 
 ## What it touches
 
@@ -78,10 +100,15 @@ php flarum cache:clear
   browser default).
 - `.IndexPage-toolbar` -- more breathing room above the discussion list, matching Killboard's own
   generous spacing.
-- `.MagicSlider` (if [forumaker/magicslider](https://github.com/forumaker/magicslider) is
-  installed) -- rounded glass card matching `.Hero`'s treatment, circular icon-button arrows
-  matching Layout.tsx's account/search buttons, pill dots with a neon-blue active glow instead of
-  a flat white dot.
+- **`DeathfeedHero` (JS)** -- overrides `IndexPage.prototype.hero` and `WelcomeHero.prototype.view`
+  (`js/src/forum/index.tsx`, same extension points [forumaker/magicslider](https://github.com/forumaker/magicslider)
+  uses) to render a custom hero matching deathfeed.com's own homepage: "EUROPE · LIVE" badge,
+  two-tone headline, subtitle, and three live stat tiles (kills/loot/active players) fetched from
+  `https://deathfeed.com/api/local/stats?server=europe` on mount. Loot uses the same
+  K/M/B-abbreviation rule as Killboard's own `formatSilver` (ported, not imported, since this is
+  a separate JS bundle/origin). Styled via `.DeathfeedHero-*` classes in `less/forum.less`, reusing
+  the `.Hero`/`.container` wrapper so the existing rounded-card/radial-glow CSS applies
+  automatically.
 - Scrollbar -- violet thumb, matching the main site.
 
 Layout ideas (the `.Hero` banner treatment and `.sideNav` pill styling) are adapted from two
