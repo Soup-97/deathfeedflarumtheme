@@ -2,18 +2,22 @@ import app from 'flarum/forum/app';
 import Component from 'flarum/common/Component';
 import Button from 'flarum/common/components/Button';
 import LinkButton from 'flarum/common/components/LinkButton';
-import LogInModal from 'flarum/forum/components/LogInModal';
-import SignUpModal from 'flarum/forum/components/SignUpModal';
-import avatar from 'flarum/common/helpers/avatar';
+import Avatar from 'flarum/common/components/Avatar';
 import formatNumber from 'flarum/common/utils/formatNumber';
 import humanTime from 'flarum/common/utils/humanTime';
 
 // Adapted from madeyedeer/flarum-pallet-theme's Sidebar.js (the logged-in user stats block
 // specifically -- not its full IndexPage/TagsPage restructuring, which depends on flarum/tags
 // and isn't what was asked for). Several of that file's import paths turned out to be stale 1.x
-// ones (flarum/utils/formatNumber, flarum/common/components/LogInModal); verified against
-// Flarum 2.0's actual current source tree (flarum/framework's framework/core/js/src) instead of
-// copied as-is -- formatNumber/humanTime are common/utils/, LogIn/SignUpModal are forum/components/.
+// ones, verified (and corrected) against Flarum 2.0's actual registered module keys by
+// inspecting the compiled core forum.js bundle rather than trusting GitHub source-tree file
+// paths alone -- those don't always match the runtime registry key:
+//   - `flarum/common/helpers/avatar` doesn't exist in 2.0 (1.x had a helper function here);
+//     the real registered key is the `common/components/Avatar` component.
+//   - LogInModal/SignUpModal aren't eagerly registered at all -- core's own HeaderSecondary.js
+//     loads them as lazy webpack chunks via `() => import('./LogInModal')`, so this extension
+//     mirrors that exact pattern below instead of statically importing them.
+//   - formatNumber/humanTime are common/utils/ (not 1.x's flarum/utils/).
 //
 // Mounted via IndexPage.prototype.sidebarItems() (js/src/forum/index.tsx) rather than Pallet's
 // approach of mounting a whole separate site-wide sidebar DOM node in ForumApplication.mount --
@@ -35,14 +39,14 @@ export default class UserStatsPanel extends Component {
             {app.forum.attribute('allowSignUp') && (
               <Button
                 className="Button Button--primary Button--block"
-                onclick={() => app.modal.show(SignUpModal)}
+                onclick={() => app.modal.show(() => import('flarum/forum/components/SignUpModal'))}
               >
                 {app.translator.trans('core.forum.header.sign_up_link')}
               </Button>
             )}
             <Button
               className="Button Button--block"
-              onclick={() => app.modal.show(LogInModal)}
+              onclick={() => app.modal.show(() => import('flarum/forum/components/LogInModal'))}
             >
               {app.translator.trans('core.forum.header.log_in_link')}
             </Button>
@@ -53,7 +57,9 @@ export default class UserStatsPanel extends Component {
 
     return (
       <div className="DeathfeedSidebar-user">
-        <div className="DeathfeedSidebar-user-avatar">{avatar(user)}</div>
+        <div className="DeathfeedSidebar-user-avatar">
+          <Avatar user={user} />
+        </div>
         <h4 className="DeathfeedSidebar-user-name">{user.username()}</h4>
         <p className="DeathfeedSidebar-user-joined">
           {app.translator.trans('core.forum.user.joined_date_text', {
