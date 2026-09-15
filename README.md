@@ -64,6 +64,20 @@ php flarum cache:clear
 - `.Scrubber-bar` -- glow on the discussion scroll-position indicator.
 - `.NotificationsDropdown-unread.new` -- gold "new activity" pop instead of the muted default,
   matching Killboard's own gold = value/attention accent.
+- `--overlay-bg` / `--control-danger-bg` / `--code-bg` / `--alert-*` / `--tooltip-bg` -- these
+  aren't part of core's dark-mode derivation (`variables.less` keeps them as flat light-mode
+  constants regardless of `@config-dark-mode`), so left alone they render as light-mode
+  yellow/red/green alert boxes on a dark theme -- a real, visible bug, fixed with dark-toned
+  equivalents using the neon palette.
+- `.PostUser-name` -- bold byline. `.Post-body blockquote/code/pre` -- neon-blue-accented quote
+  bar, dark code blocks. `.ReplyPlaceholder` -- neon-blue dashed border instead of the gray default.
+- `.Modal-content` -- glass blur + neon-blue edge instead of a flat card.
+  `.Modal--inverted .Modal-header` -- consistent dark tone.
+- `.tooltip-inner` -- subtle neon-blue border.
+- `h1`-`h4` -- Poppins bold, matching Killboard's own heading weight (core leaves this to the
+  browser default).
+- `.IndexPage-toolbar` -- more breathing room above the discussion list, matching Killboard's own
+  generous spacing.
 - Scrollbar -- violet thumb, matching the main site.
 
 Layout ideas (the `.Hero` banner treatment and `.sideNav` pill styling) are adapted from two

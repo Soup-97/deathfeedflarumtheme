@@ -42,6 +42,25 @@
   --link-color: var(--deathfeed-neon-blue);
   --control-bg: var(--deathfeed-dark-800);
   --border-radius: 0.625rem; /* matches Killboard's --radius-md */
+
+  /* Not part of core's own dark-mode derivation (variables.less keeps these
+     as flat constants regardless of @config-dark-mode), so left alone
+     they'd render as light-mode yellow/red/green alert boxes on a dark
+     theme -- a real, visible bug. Overridden to dark-toned equivalents
+     using the same neon palette instead. */
+  --overlay-bg: rgba(13, 17, 23, 0.9);
+  --control-danger-bg: rgba(239, 68, 68, 0.15);
+  --control-danger-color: #f87171;
+  --code-bg: var(--deathfeed-dark-800);
+  --code-color: #e2e8f0;
+  --alert-bg: rgba(251, 191, 36, 0.12);
+  --alert-color: var(--deathfeed-neon-gold);
+  --alert-error-bg: rgba(239, 68, 68, 0.15);
+  --alert-error-color: #f87171;
+  --alert-success-bg: rgba(74, 222, 128, 0.12);
+  --alert-success-color: var(--deathfeed-neon-green);
+  --tooltip-bg: rgba(13, 17, 23, 0.95);
+  --tooltip-color: #e2e8f0;
 }
 
 html, body, .App {
@@ -334,4 +353,79 @@ a:hover > .Avatar,
   background: var(--deathfeed-neon-gold);
   color: #0D1117;
   box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+}
+
+/* ---- Post content -- .Post-header/.PostUser-name/.Post-body already
+   inherit --muted-color/--heading-color/--control-bg/--code-bg from the
+   palette above; this adds the parts core leaves as plain structural rules
+   (byline weight, blockquote accent, code block look, reply placeholder). */
+.PostUser-name {
+  font-weight: 700;
+}
+
+.Post-body {
+  blockquote {
+    border-left: 3px solid var(--deathfeed-neon-blue);
+    border-top: none;
+    border-bottom: none;
+    background: rgba(96, 165, 250, 0.06);
+  }
+
+  code {
+    border-radius: 4px;
+  }
+
+  pre {
+    background: var(--deathfeed-dark-900);
+    border: 1px solid var(--deathfeed-dark-700);
+    border-radius: var(--border-radius);
+  }
+}
+
+.Post--renderFailed {
+  border-radius: var(--border-radius);
+}
+
+.ReplyPlaceholder {
+  border-color: rgba(96, 165, 250, 0.3);
+  border-radius: var(--border-radius);
+  transition: border-color 0.15s ease;
+
+  &:hover {
+    border-color: rgba(96, 165, 250, 0.6);
+  }
+}
+
+/* ---- Modal -- .Modal-content/.Modal-body already inherit --body-bg/
+   --control-bg; this adds glass blur + a neon-blue accent edge instead of
+   a flat card, and darkens --overlay-bg's default further for atmosphere
+   (already set above, this is just the backdrop blur core doesn't add). */
+.Modal-content {
+  backdrop-filter: blur(16px);
+  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.12), 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.Modal--inverted .Modal-header {
+  background-color: var(--deathfeed-dark-700);
+}
+
+/* ---- Tooltip -- adds a subtle neon-blue border core doesn't have, on top
+   of the already-dark --tooltip-bg/--tooltip-color set above. */
+.tooltip-inner {
+  border: 1px solid rgba(96, 165, 250, 0.25);
+}
+
+/* ---- Headings -- Poppins bold, matching Killboard's own font-bold
+   headings (core leaves heading weight/family to the browser default). */
+h1, h2, h3, h4 {
+  font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+/* ---- Index page toolbar -- a bit more breathing room between the tag
+   nav/sort controls and the discussion list below, matching the generous
+   spacing (gap-4/mb-10) used throughout Killboard's own layout. */
+.IndexPage-toolbar {
+  margin-bottom: 24px;
 }
