@@ -7,15 +7,26 @@ frontend (`src/index.css`, `Layout.tsx`, `AlbionBackdrop.tsx`).
 
 Two parts:
 - **CSS/LESS** (`less/forum.less`) -- Flarum compiles this server-side, no build step.
-- **JS** (`js/src/forum/`) -- replaces Flarum's default WelcomeHero with a custom hero that
-  matches deathfeed.com's own homepage hero exactly (same headline/subtitle copy, same layout),
-  including live "Kills Today" / "Loot Today" / "Active PvP Players Today" stats fetched
-  client-side from Killboard's own `/api/local/stats` (CORS is already wide open there, no
-  backend proxy needed). This replaces the [MagicSlider](https://github.com/forumaker/magicslider)
-  extension entirely -- **disable/uninstall MagicSlider in Admin > Extensions** once this is
-  live, since both override the same hero and having both active means whichever loads last wins.
-  `js/dist/forum.js` is committed pre-built (`npm run build` was already run), so installing
-  this extension only needs Composer -- no Node inside the Flarum container.
+- **JS** (`js/src/forum/`) -- two things:
+  1. Replaces Flarum's default WelcomeHero with a custom hero that matches deathfeed.com's own
+     homepage hero exactly (same headline/subtitle copy, same background image, same layout),
+     including live "Kills Today" / "Loot Today" / "Active PvP Players Today" stats fetched
+     client-side from Killboard's own `/api/local/stats` (CORS is already wide open there, no
+     backend proxy needed). This replaces the [MagicSlider](https://github.com/forumaker/magicslider)
+     extension entirely -- **disable/uninstall MagicSlider in Admin > Extensions** once this is
+     live, since both override the same hero and having both active means whichever loads last wins.
+  2. A logged-in user stats panel (avatar, join date, post/discussion counts, profile/settings
+     links -- or a sign-up/log-in prompt for guests) dropped into the forum index's existing
+     sidebar column, the same feature [madeyedeer/flarum-pallet-theme](https://github.com/madeyedeer/flarum-pallet-theme)
+     has. Built as a much smaller, self-contained version of that: Pallet's own implementation
+     mounts a whole separate site-wide sidebar DOM node and needs global layout/margin changes on
+     every page; this one just adds an item to `IndexPage.sidebarItems()`, which core already
+     renders inside the `.sideNav` column this theme already styles -- no layout changes needed
+     anywhere else, and no dependency on `flarum/tags` (Pallet's version requires it).
+
+  `js/dist/forum.js` is committed pre-built (`npm run build` was already run, and the compiled
+  output's externalized imports were checked against Flarum's actual current source tree), so
+  installing this extension only needs Composer -- no Node inside the Flarum container.
 
 ## Installing on your running Flarum instance (Coolify / Docker)
 
@@ -120,6 +131,11 @@ has to already be in the repo.
   a separate JS bundle/origin). Styled via `.DeathfeedHero-*` classes in `less/forum.less`, reusing
   the `.Hero`/`.container` wrapper so the existing rounded-card/radial-glow CSS applies
   automatically.
+- **`UserStatsPanel` (JS)** -- extends `IndexPage.prototype.sidebarItems()`
+  (`js/src/forum/index.tsx`) to add a logged-in user card (avatar, join date, post/discussion
+  counts, profile/settings links) or a sign-up/log-in prompt for guests, at the top of the
+  `.sideNav` column. Styled via `.DeathfeedSidebar-*` classes -- glass-card matching every other
+  panel in the theme, stat values in neon-blue.
 - Scrollbar -- violet thumb, matching the main site.
 
 Layout ideas (the `.Hero` banner treatment and `.sideNav` pill styling) are adapted from two

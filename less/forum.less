@@ -544,3 +544,116 @@ h1, h2, h3, h4 {
     font-size: 1.875rem;
   }
 }
+
+/* ---- User stats sidebar (js/src/forum/components/UserStatsPanel.tsx) -- dropped into
+   IndexPage's existing .sideNav column via sidebarItems(), so no layout classes needed here
+   beyond the card itself; .sideNav's own rounded-pill nav styling above still applies to the
+   other items in that column. Glass-card treatment matching every other panel in this theme. */
+.DeathfeedSidebar-user,
+.DeathfeedSidebar-guest {
+  background: rgba(22, 27, 34, 0.6);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius);
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.DeathfeedSidebar-user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.DeathfeedSidebar-user-avatar {
+  .Avatar {
+    width: 56px;
+    height: 56px;
+    font-size: 20px;
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.4), 0 0 16px rgba(96, 165, 250, 0.2);
+  }
+}
+
+.DeathfeedSidebar-user-name {
+  margin: 0.625rem 0 0.125rem;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.DeathfeedSidebar-user-joined {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--muted-color);
+}
+
+.DeathfeedSidebar-user-stats {
+  display: flex;
+  width: 100%;
+  gap: 0.5rem;
+  margin-top: 0.875rem;
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--deathfeed-dark-700);
+}
+
+.DeathfeedSidebar-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.DeathfeedSidebar-stat-value {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--deathfeed-neon-blue);
+  font-variant-numeric: tabular-nums;
+}
+
+.DeathfeedSidebar-stat-label {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted-color);
+}
+
+.DeathfeedSidebar-user-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  width: 100%;
+  margin-top: 0.875rem;
+
+  .Button {
+    width: 100%;
+    justify-content: flex-start;
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 500;
+    background: transparent;
+    border-radius: 0.5rem;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+  }
+}
+
+.DeathfeedSidebar-guest-greeting {
+  margin: 0 0 0.25rem;
+  font-weight: 700;
+  color: var(--text-color);
+}
+
+.DeathfeedSidebar-guest-message {
+  margin: 0 0 0.875rem;
+  font-size: 0.8125rem;
+  color: var(--muted-color);
+  line-height: 1.5;
+}
+
+.DeathfeedSidebar-guest-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
