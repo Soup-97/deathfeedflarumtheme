@@ -1,6 +1,7 @@
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
 import IndexPage from 'flarum/forum/components/IndexPage';
+import IndexSidebar from 'flarum/forum/components/IndexSidebar';
 import WelcomeHero from 'flarum/forum/components/WelcomeHero';
 
 import DeathfeedHero from './components/DeathfeedHero';
@@ -19,13 +20,15 @@ app.initializers.add('deathfeed-theme', () => {
   });
 
   // User stats sidebar (avatar, join date, post/discussion counts, quick links) -- dropped
-  // into IndexPage's own sidebarItems() ItemList, which core already renders inside the
-  // .sideNav column (IndexPage.tsx: <nav className="IndexPage-nav sideNav"><ul>{listItems(
-  // this.sidebarItems().toArray())}</ul></nav>) -- no layout/margin changes needed anywhere,
-  // unlike madeyedeer/flarum-pallet-theme's own version of this feature, which mounts a whole
-  // separate site-wide sidebar DOM node instead. Priority 200 keeps it above core's own
-  // "New Discussion" button and nav dropdown.
-  extend(IndexPage.prototype, 'sidebarItems', function (items: any) {
-    items.add('deathfeed-user-stats', <UserStatsPanel />, 200);
+  // into IndexSidebar's own items() ItemList. `IndexPage.prototype.sidebarItems()` doesn't
+  // exist in Flarum 2.0 -- extending it was a silent no-op (extend() on a nonexistent method
+  // just never fires), which is the real reason nothing appeared before. 2.0 moved the whole
+  // left column out of IndexPage into its own IndexSidebar component (confirmed against its
+  // actual source: `view()` renders <nav className="IndexPage-nav sideNav"><ul>{listItems(
+  // this.items().toArray())}</ul></nav>`, and `items()` -- not `sidebarItems()` -- is what
+  // core itself uses to add the "New Discussion" button and nav dropdown). Negative priority
+  // renders below both of those (core's own items default to priority 0).
+  extend(IndexSidebar.prototype, 'items', function (items: any) {
+    items.add('deathfeed-user-stats', <UserStatsPanel />, -100);
   });
 });
