@@ -57,6 +57,13 @@ php flarum cache:clear
   on hover.
 - `.Avatar` -- neon-blue ring on hover.
 - `.LoadingIndicator-spinner` -- neon-blue glow, a small nod to DeathLoader's aesthetic.
+- `.DiscussionHero-title` -- heavier weight so the discussion-page title reads as a real heading.
+- `.UserCard` / `.UserCard--popover` -- glass background (`--usercard-bg` isn't set by core's own
+  defaults, so this pins it explicitly) + neon-blue glow; also fixes a real core bug where the
+  popover avatar has a hardcoded solid-white border that looked jarring on a dark theme.
+- `.Scrubber-bar` -- glow on the discussion scroll-position indicator.
+- `.NotificationsDropdown-unread.new` -- gold "new activity" pop instead of the muted default,
+  matching Killboard's own gold = value/attention accent.
 - Scrollbar -- violet thumb, matching the main site.
 
 Layout ideas (the `.Hero` banner treatment and `.sideNav` pill styling) are adapted from two
