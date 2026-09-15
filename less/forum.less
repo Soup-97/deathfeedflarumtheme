@@ -641,37 +641,12 @@ h1, h2, h3, h4 {
   color: var(--muted-color);
 }
 
-.DeathfeedSidebar-user-links {
-  display: flex;
-  flex-direction: column;
-  gap: 0.375rem;
-  width: 100%;
-  // Sits at the top of its own block normally; margin-top: auto instead pins it to the
-  // bottom of the card's flex column (see .DeathfeedSidebar-user's min-height above), so
-  // any extra space the taller card has past its natural content height reads as
-  // deliberate spacing rather than a gap between the stats and the card's bottom edge.
-  margin-top: auto;
-  padding-top: 0.875rem;
-
-  .Button {
-    width: 100%;
-    justify-content: flex-start;
-    text-transform: none;
-    letter-spacing: normal;
-    font-weight: 500;
-    background: transparent;
-    border-radius: 0.5rem;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.05);
-    }
-  }
-}
-
 .DeathfeedSidebar-guest {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+}
+
+.DeathfeedSidebar-guest-header {
   text-align: center;
 }
 
@@ -693,4 +668,80 @@ h1, h2, h3, h4 {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+}
+
+/* ---- Divider between the avatar/stats header, the forum's own nav links (All Discussions,
+   Tags, anything else registered via IndexSidebar.navItems()), the Start a Discussion button,
+   and the account links -- everything now lives in one continuous card instead of separate
+   items stacked in the column, matching Pallet's own sidebar structure. */
+.DeathfeedSidebar-divider {
+  height: 1px;
+  background: var(--deathfeed-dark-700);
+  margin: 1rem 0;
+}
+
+.DeathfeedSidebar-nav {
+  width: 100%;
+
+  > ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .Button,
+  .LinkButton {
+    // display:flex (not grid) so the label stays shrink-to-fit and justify-content:flex-start
+    // actually left-aligns it -- a grid column spanning the row's full width would still
+    // center the label's own text within that column, fighting the text-align:center this
+    // whole card inherits from .DeathfeedSidebar-user's centered avatar/name header above.
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    text-align: left;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.25rem;
+    border-radius: 9999px;
+    background: transparent;
+    color: var(--muted-color);
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 500;
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+      color: var(--text-color);
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  li.active .LinkButton {
+    color: var(--deathfeed-neon-blue);
+    background-color: rgba(96, 165, 250, 0.15);
+    box-shadow: 0 0 10px rgba(96, 165, 250, 0.25);
+  }
+}
+
+.DeathfeedSidebar-newDiscussion {
+  margin-bottom: 0.25rem;
+}
+
+.DeathfeedSidebar-logout {
+  width: 100%;
+  justify-content: flex-start;
+  text-align: left;
+  background: transparent;
+  color: var(--muted-color);
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+
+  &:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+  }
 }

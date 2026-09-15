@@ -15,14 +15,19 @@ Two parts:
      backend proxy needed). This replaces the [MagicSlider](https://github.com/forumaker/magicslider)
      extension entirely -- **disable/uninstall MagicSlider in Admin > Extensions** once this is
      live, since both override the same hero and having both active means whichever loads last wins.
-  2. A logged-in user stats panel (avatar, join date, post/discussion counts, profile/settings
-     links -- or a sign-up/log-in prompt for guests) dropped into the forum index's existing
-     sidebar column, the same feature [madeyedeer/flarum-pallet-theme](https://github.com/madeyedeer/flarum-pallet-theme)
-     has. Built as a much smaller, self-contained version of that: Pallet's own implementation
-     mounts a whole separate site-wide sidebar DOM node and needs global layout/margin changes on
-     every page; this one just adds an item to `IndexPage.sidebarItems()`, which core already
-     renders inside the `.sideNav` column this theme already styles -- no layout changes needed
-     anywhere else, and no dependency on `flarum/tags` (Pallet's version requires it).
+  2. A full sidebar matching [madeyedeer/flarum-pallet-theme](https://github.com/madeyedeer/flarum-pallet-theme)'s
+     own: avatar, name, join date, and post/discussion counts (or a sign-up/log-in prompt for
+     guests) at the top, then the forum's own nav links (All Discussions, Tags, and anything else
+     installed extensions register), then "Start a Discussion", then Profile/Settings/
+     Administration/Log Out -- one continuous column instead of a small card wedged below core's
+     own controls. Replaces core's default "New Discussion" button and nav dropdown entirely
+     (`IndexSidebar.prototype.items()`) rather than sitting alongside them. Unlike Pallet's own
+     implementation, which mounts a whole separate site-wide sidebar DOM node and needs global
+     layout/margin changes on every page, this drops straight into the `.sideNav` column
+     `IndexSidebar` (Flarum 2.0's replacement for `IndexPage.sidebarItems()`, which no longer
+     exists) already renders on the index page -- no layout changes needed anywhere else, and no
+     dependency on `flarum/tags` (Pallet's version requires it; this reads whatever nav items are
+     actually registered, so it still works without it).
 
   `js/dist/forum.js` is committed pre-built (`npm run build` was already run, and the compiled
   output's externalized imports were checked against Flarum's actual current source tree), so
@@ -131,11 +136,13 @@ has to already be in the repo.
   a separate JS bundle/origin). Styled via `.DeathfeedHero-*` classes in `less/forum.less`, reusing
   the `.Hero`/`.container` wrapper so the existing rounded-card/radial-glow CSS applies
   automatically.
-- **`UserStatsPanel` (JS)** -- extends `IndexPage.prototype.sidebarItems()`
-  (`js/src/forum/index.tsx`) to add a logged-in user card (avatar, join date, post/discussion
-  counts, profile/settings links) or a sign-up/log-in prompt for guests, at the top of the
-  `.sideNav` column. Styled via `.DeathfeedSidebar-*` classes -- glass-card matching every other
-  panel in the theme, stat values in neon-blue.
+- **`DeathfeedSidebar` (JS)** -- extends `IndexSidebar.prototype.items()` (`js/src/forum/index.tsx`)
+  to replace core's default "New Discussion" button and nav dropdown with one continuous column:
+  avatar/name/join-date/post-discussion-counts (or a sign-up/log-in prompt for guests), the
+  forum's own nav links rendered as flat rows instead of a dropdown, "Start a Discussion", then
+  Profile/Settings/Administration/Log Out. Styled via `.DeathfeedSidebar-*` classes -- glass-card
+  matching every other panel in the theme, stat values in neon-blue, nav/account rows as rounded
+  pills matching the header nav's own active-state treatment.
 - Scrollbar -- violet thumb, matching the main site.
 
 Layout ideas (the `.Hero` banner treatment and `.sideNav` pill styling) are adapted from two
