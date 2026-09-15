@@ -44,8 +44,19 @@ php flarum cache:clear
 - `.App-header` -- blurred glass nav bar.
 - `.Button` / `.Button--primary` -- pill shape, neon-blue glow.
 - `.DiscussionListItem`, `.Post`, `.Dropdown-menu`, `.Modal-content` -- glass-card treatment.
+- `.DiscussionListItem-title` / `.DiscussionListItem-info` / `.item-excerpt` / `.stickyDiscussion`
+  -- finer-grained discussion list card detail, sticky discussions get Deathfeed's gold tint.
+- `.Hero` -- rounded banner card with Deathfeed's own blue/violet radial glow.
+- `.sideNav` -- rounded pill tag/nav items with the same active-state neon-blue glow as
+  Layout.tsx's navbar pills.
 - Links, unread badges, tags -- neon-blue/violet/green accents.
 - Scrollbar -- violet thumb, matching the main site.
+
+Layout ideas (the `.Hero` banner treatment and `.sideNav` pill styling) are adapted from two
+community themes -- [Asirem](https://github.com/afrux/asirem) and
+[Pallet](https://github.com/madeyedeer/flarum-pallet-theme) -- restyled with Deathfeed's own
+palette rather than copied verbatim; both are pure CSS/LESS ideas here, their JS-driven features
+(if any) aren't included.
 
 If a specific element still doesn't match after enabling this, it's most likely because Flarum
 2.0's actual rendered class names for that component differ from what's assumed here -- inspect

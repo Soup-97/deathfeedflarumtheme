@@ -103,6 +103,44 @@ body {
   border-radius: var(--border-radius);
 }
 
+/* ---- Discussion list card detail -- the finer-grained sub-selectors here
+   (title/info/excerpt/sticky) follow the same breakdown madeyedeer's Pallet
+   theme uses (less/forum/DiscussionListItem.less), adapted to Deathfeed's
+   palette instead of Pallet's blue/orange. */
+.DiscussionListItem {
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background-color: rgba(22, 27, 34, 0.75);
+    border-color: rgba(96, 165, 250, 0.2);
+  }
+}
+
+.DiscussionListItem-title {
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.DiscussionList:not(.DiscussionList--searchResults) .DiscussionListItem.read .DiscussionListItem-title {
+  color: var(--muted-color);
+}
+
+.DiscussionListItem-info,
+.item-excerpt {
+  color: var(--muted-color);
+}
+
+/* Sticky discussions -- Deathfeed's gold accent (Killboard reserves gold for
+   loot value / "juicy" kills) instead of Pallet's amber, same treatment:
+   a tinted background rather than just a pin icon. */
+.stickyDiscussion {
+  background: rgba(251, 191, 36, 0.08);
+
+  &:hover {
+    background: rgba(251, 191, 36, 0.14);
+  }
+}
+
 /* ---- Links / tags -- neon-blue by default, unread/highlighted states pick
    up the violet/green/gold accents so the forum reads as one system with
    the rest of Deathfeed rather than a generic blue skin */
@@ -118,6 +156,64 @@ a {
 .Badge--success,
 .TagsInput-tag {
   background: var(--deathfeed-neon-green);
+}
+
+/* ---- Hero banner -- same rounded/responsive-max-width treatment as
+   afrux's Asirem theme (less/forum/Hero.less), styled with Deathfeed's own
+   radial blue/violet glow (index.css's `radial-gradient(circle at 50% 0%,
+   #1e1b4b ...)`) instead of a background-image banner, and Killboard's
+   actual hero card border (DesignPreviewPage.tsx: rounded-2xl, border-dark-700). */
+.Hero {
+  margin: 15px auto 0;
+  max-width: @screen-desktop-hd;
+  border-radius: 1.125rem;
+  border: 1px solid var(--deathfeed-dark-700);
+  overflow: hidden;
+  background-color: var(--deathfeed-dark-800);
+  background-image: radial-gradient(circle at 50% 0%, rgba(96, 165, 250, 0.18) 0%, transparent 55%),
+                     radial-gradient(circle at 100% 100%, rgba(192, 132, 252, 0.12) 0%, transparent 50%);
+
+  @media @tablet {
+    max-width: @screen-tablet;
+  }
+
+  @media @phone {
+    max-width: calc(~"100% - 30px");
+    margin-bottom: 15px;
+    border-radius: 0.875rem;
+  }
+
+  .container {
+    padding: 30px;
+  }
+}
+
+/* ---- Side nav / tag pills -- rounded icon+label pills with a neon-blue
+   active/hover glow, same grid layout idea as Asirem's less/forum/sideNav.less,
+   restyled to match Layout.tsx's own nav pills (rounded-full, active state
+   text-neon-blue bg-neon-blue/15 shadow-[0_0_10px_rgba(96,165,250,0.25)]). */
+.sideNav {
+  > ul > li > a {
+    border-radius: 9999px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.875rem;
+    color: var(--muted-color);
+    transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover {
+      color: var(--text-color);
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  > ul > li.active > a {
+    color: var(--deathfeed-neon-blue);
+    background-color: rgba(96, 165, 250, 0.15);
+    box-shadow: 0 0 10px rgba(96, 165, 250, 0.25);
+  }
 }
 
 /* ---- Scrollbar -- same violet thumb as Killboard's index.css */
