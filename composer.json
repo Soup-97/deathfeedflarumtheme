@@ -1,0 +1,20 @@
+{
+    "name": "deathfeed/flarum-ext-theme",
+    "description": "Deathfeed's neon-glass dark theme for Flarum -- matches community.deathfeed.com to deathfeed.com's own design.",
+    "type": "flarum-extension",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Deathfeed"
+        }
+    ],
+    "require": {
+        "flarum/core": "^2.0.0"
+    },
+    "extra": {
+        "flarum-extension": {
+            "title": "Deathfeed Theme",
+            "category": "theme"
+        }
+    }
+}

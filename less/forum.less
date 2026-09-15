@@ -1,0 +1,139 @@
+/* ============================================================================
+   Deathfeed theme for Flarum.
+
+   Values below are lifted directly from Killboard's src/index.css (the @theme
+   block) and src/components/Layout.tsx / AlbionBackdrop.tsx -- same neon-blue/
+   violet/green/gold accents, same dark-900 background + radial glow, same
+   Poppins body font -- not eyeballed.
+
+   Self-contained: redeclares @config-primary-color / @config-secondary-color /
+   @config-dark-mode itself (LESS resolves the last declaration in scope, and
+   extension LESS compiles after core's admin-configured values -- the same
+   mechanism docs.flarum.org/2.x/extend/theme documents for theme extensions),
+   so the Admin > Appearance color pickers don't need to be touched separately.
+   ============================================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Rajdhani:wght@500;600;700&display=swap');
+
+@config-primary-color: #60a5fa;   /* Killboard's --color-neon-blue */
+@config-secondary-color: #161B22; /* Killboard's --color-dark-800 */
+@config-dark-mode: true;
+@config-colored-header: false;
+
+/* ---- Base palette --------------------------------------------------------
+   Flarum 2.0 compiles its LESS variables into real CSS custom properties at
+   runtime (--body-bg, --text-color, --border-radius, etc.), so overriding
+   them as plain custom properties here is more reliable than relying purely
+   on LESS compile order for the finer color/radius tuning below. */
+:root {
+  --deathfeed-dark-900: #0D1117;
+  --deathfeed-dark-800: #161B22;
+  --deathfeed-dark-700: #21262D;
+  --deathfeed-dark-600: #30363D;
+
+  --deathfeed-neon-blue: #60a5fa;
+  --deathfeed-neon-violet: #c084fc;
+  --deathfeed-neon-green: #4ade80;
+  --deathfeed-neon-gold: #fbbf24;
+
+  --body-bg: var(--deathfeed-dark-900);
+  --text-color: #e2e8f0;
+  --muted-color: #9ca3af;
+  --link-color: var(--deathfeed-neon-blue);
+  --control-bg: var(--deathfeed-dark-800);
+  --border-radius: 0.625rem; /* matches Killboard's --radius-md */
+}
+
+html, body, .App {
+  font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Radial glow behind everything, same recipe as Killboard's AlbionBackdrop /
+   body background (index.css: radial-gradient(circle at 50% 0%, #1e1b4b ...)). */
+body {
+  background-color: var(--deathfeed-dark-900);
+  background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, var(--deathfeed-dark-900) 60%);
+  background-attachment: fixed;
+}
+
+/* ---- Header -- glassy dark bar instead of a solid color block, matching
+   Layout.tsx's nav (bg-dark-900/90 backdrop-blur-md border-b border-dark-700) */
+:root {
+  --header-bg: rgba(13, 17, 23, 0.9);
+  --header-color: #e2e8f0;
+  --header-control-bg: rgba(255, 255, 255, 0.05);
+  --header-control-color: #9ca3af;
+}
+
+.App-header {
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--deathfeed-dark-700);
+}
+
+/* ---- Buttons -- pill shape + neon glow, matching Layout.tsx's nav pills
+   and DesignPreviewPage's category tiles */
+.Button {
+  border-radius: 9999px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  transition: all 0.2s ease;
+}
+
+.Button--primary {
+  background: var(--deathfeed-neon-blue);
+  color: #0D1117;
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.45);
+}
+
+.Button--primary:hover {
+  box-shadow: 0 0 16px rgba(96, 165, 250, 0.65);
+  transform: translateY(-1px);
+}
+
+/* ---- Cards / panels -- glass-card look (bg-dark-800/50 backdrop-blur-md
+   border-white/5), same recipe used for every card across Killboard */
+.DiscussionListItem,
+.Post,
+.Dropdown-menu,
+.Modal-content {
+  background-color: rgba(22, 27, 34, 0.5);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: var(--border-radius);
+}
+
+/* ---- Links / tags -- neon-blue by default, unread/highlighted states pick
+   up the violet/green/gold accents so the forum reads as one system with
+   the rest of Deathfeed rather than a generic blue skin */
+a {
+  color: var(--deathfeed-neon-blue);
+}
+
+.DiscussionListItem.unread .DiscussionListItem-title,
+.Badge--unread {
+  color: var(--deathfeed-neon-violet);
+}
+
+.Badge--success,
+.TagsInput-tag {
+  background: var(--deathfeed-neon-green);
+}
+
+/* ---- Scrollbar -- same violet thumb as Killboard's index.css */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--deathfeed-dark-900);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #4c1d95;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #7c3aed;
+}
