@@ -50,6 +50,13 @@ php flarum cache:clear
 - `.sideNav` -- rounded pill tag/nav items with the same active-state neon-blue glow as
   Layout.tsx's navbar pills.
 - Links, unread badges, tags -- neon-blue/violet/green accents.
+- `.FormControl` -- focus glow on inputs/textareas.
+- `.Composer` -- dark glass panel for the reply/post editor.
+- `.TagTile` / `.TagTile-info` (if `flarum/tags` is installed) -- translates Killboard's own
+  "Explore by content" homepage cards onto Flarum's tag grid: glass-card, neon-blue border glow
+  on hover.
+- `.Avatar` -- neon-blue ring on hover.
+- `.LoadingIndicator-spinner` -- neon-blue glow, a small nod to DeathLoader's aesthetic.
 - Scrollbar -- violet thumb, matching the main site.
 
 Layout ideas (the `.Hero` banner treatment and `.sideNav` pill styling) are adapted from two

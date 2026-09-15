@@ -216,6 +216,63 @@ a {
   }
 }
 
+/* ---- Form inputs -- .FormControl already inherits --control-bg/--body-bg/
+   --primary-color from the palette overrides above (core's own FormControl.less
+   uses those exact custom properties), so this just adds the focus glow. */
+.FormControl:focus {
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+}
+
+/* ---- Composer (reply/post editor) -- dark glass panel instead of the flat
+   --body-bg-faded default, matching every other card's treatment. */
+.Composer {
+  background: rgba(13, 17, 23, 0.92);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.4);
+}
+
+.ComposerBody-loading {
+  background: rgba(22, 27, 34, 0.6);
+}
+
+/* ---- Tag tiles (flarum/tags) -- translates Killboard's own "Explore by
+   content" category cards (DesignPreviewPage.tsx's CATEGORIES grid: icon +
+   label + desc, glass-card, border glow on hover) onto Flarum's existing
+   .TagTile structure (icon/name/description in .TagTile-info) rather than
+   building a new component -- same idea, same DOM Flarum already renders. */
+.TagTile {
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.35), 0 0 16px rgba(96, 165, 250, 0.15);
+  }
+}
+
+.TagTile-info {
+  background-color: rgba(22, 27, 34, 0.6);
+  backdrop-filter: blur(12px);
+}
+
+/* ---- Avatars -- subtle neon-blue ring on hover, same glow language as the
+   rest of the theme instead of a plain default outline. */
+.Avatar {
+  transition: box-shadow 0.15s ease;
+}
+
+a:hover > .Avatar,
+.Avatar:hover {
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.5);
+}
+
+/* ---- Loading spinner -- neon-blue instead of the default muted color, a
+   small nod to DeathLoader's glow language (index.css's skull-glow keyframe)
+   without trying to reproduce the skull SVG itself in pure CSS. */
+.LoadingIndicator-spinner {
+  filter: drop-shadow(0 0 4px rgba(96, 165, 250, 0.5));
+}
+
 /* ---- Scrollbar -- same violet thumb as Killboard's index.css */
 ::-webkit-scrollbar {
   width: 6px;
