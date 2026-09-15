@@ -78,6 +78,10 @@ php flarum cache:clear
   browser default).
 - `.IndexPage-toolbar` -- more breathing room above the discussion list, matching Killboard's own
   generous spacing.
+- `.MagicSlider` (if [forumaker/magicslider](https://github.com/forumaker/magicslider) is
+  installed) -- rounded glass card matching `.Hero`'s treatment, circular icon-button arrows
+  matching Layout.tsx's account/search buttons, pill dots with a neon-blue active glow instead of
+  a flat white dot.
 - Scrollbar -- violet thumb, matching the main site.
 
 Layout ideas (the `.Hero` banner treatment and `.sideNav` pill styling) are adapted from two
