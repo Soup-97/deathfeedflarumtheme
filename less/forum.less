@@ -67,6 +67,25 @@ html, body, .App {
   font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
 }
 
+/* ---- Sticky footer -- core's .App already has min-height:100vh (App.less), but without a flex
+   column, a short page just leaves .App-footer trailing right after its content instead of
+   reaching the bottom of the viewport. That reads as visibly "unaligned" once the fixed
+   .App-sidebar is in the picture (see its own rules further down): the sidebar always spans
+   header-to-viewport-bottom, so a footer that stops mid-page makes the two columns end at
+   different heights. .App-header/.App-navigation/#drawer are already position:absolute/fixed at
+   @tablet-up (core's own App.less), so they're out of flow and unaffected by this -- only
+   .App-content needs to grow to fill the remaining space, which pushes .App-footer (the next
+   flex item) down to the true bottom on short pages while leaving normal scrolling behavior
+   untouched on long ones. */
+.App {
+  display: flex;
+  flex-direction: column;
+}
+
+.App-content {
+  flex: 1 0 auto;
+}
+
 /* Radial glow behind everything, same recipe as Killboard's AlbionBackdrop /
    body background (index.css: radial-gradient(circle at 50% 0%, #1e1b4b ...)). */
 body {
@@ -591,6 +610,21 @@ h1, h2, h3, h4 {
   }
 }
 
+/* Core's own reading-pane feature (less/forum/DiscussionListPane.less) ALSO sets margin-left on
+   .App-content/.App-footer when a user pins it open at @desktop-hd (1100px+) -- via
+   `.hasPane.panePinned .App-content { margin-left: var(--pane-width); }`, a 3-class selector
+   with higher specificity than the plain `.App-content` rule above. Left alone, pinning the pane
+   on a wide screen would silently override our sidebar's own margin-left instead of adding to
+   it, rendering page content right underneath the fixed sidebar. Matching core's own selector
+   shape (so this wins on specificity, not just source order) and adding the two widths together
+   fixes that. */
+@media @desktop-hd {
+  .hasPane.panePinned .App-content,
+  .hasPane.panePinned .App-footer {
+    margin-left: calc(300px + var(--pane-width));
+  }
+}
+
 /* Still used by UserPage's Settings/Notifications nav and DiscussionPage's own .Page-sidebar --
    IndexPage's copy is hidden above in favor of the fixed global rail, but those other pages'
    contextual sidebars are unrelated ItemLists and still render through this same --sidebar-width
@@ -783,16 +817,36 @@ h1, h2, h3, h4 {
 
 /* ---- Admin-configurable footer (js/src/forum/components/DeathfeedFooter.tsx) -- rendered
    inside core's own .App-footer, which already gets the fixed-sidebar's margin-left (see
-   .App-sidebar rules above), so this only needs its own spacing/typography. */
+   .App-sidebar rules above) and now sits flush against the viewport bottom on every page (see
+   the sticky-footer .App rules near the top of this file), so this only needs its own
+   spacing/typography. A faint background tint (rather than just the top border alone) reads as
+   a deliberate band closing out the page instead of an afterthought, matching the glass-panel
+   language used everywhere else in the theme, just far more subtle since this has to stay
+   readable as a thin strip rather than a card. */
 .DeathfeedFooter {
-  padding: 2rem 0;
+  padding: 1.75rem 0;
+  background: rgba(13, 17, 23, 0.4);
   border-top: 1px solid var(--deathfeed-dark-700);
   text-align: center;
   color: var(--muted-color);
   font-size: 0.8125rem;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
-.DeathfeedFooter-content a {
-  color: var(--deathfeed-neon-blue);
+.DeathfeedFooter-content {
+  // Textarea input preserves literal newlines, but a plain <div> collapses them like any other
+  // whitespace -- pre-line keeps an admin's own line breaks (e.g. a copyright line, then a row
+  // of links on the next) without needing them to hand-author <br> tags in a plain-text field.
+  white-space: pre-line;
+
+  a {
+    color: var(--deathfeed-neon-blue);
+    text-decoration: none;
+    transition: color 0.15s ease;
+
+    &:hover {
+      color: var(--deathfeed-neon-violet);
+      text-decoration: underline;
+    }
+  }
 }
