@@ -166,9 +166,18 @@ repo.
 - **`DeathfeedFooter` (JS)** -- overrides `Footer.prototype.view` (`js/src/forum/index.tsx`) to
   render whatever an admin has set in Admin > Extensions > Deathfeed Theme > Footer text
   (`js/src/admin/extend.ts` registers the setting, `extend.php`'s `Extend\Settings` serializes it
-  to the forum as `deathfeedFooterText`). Rendered via `m.trust()` so a link is possible; renders
-  nothing at all when the setting is empty. Styled via `.DeathfeedFooter*` classes -- centered,
-  muted text with a top border, matching the rest of the theme's dark palette.
+  to the forum as `deathfeedFooterText`). Rendered via `m.trust()` so a link is possible, and
+  `white-space: pre-line` so an admin's own line breaks in the plain-text setting field actually
+  show up instead of collapsing onto one line; renders nothing at all when the setting is empty.
+  Styled via `.DeathfeedFooter*` classes -- centered, muted text on a faint tinted band with a
+  top border, matching the rest of the theme's dark palette.
+- `.App` -- sticky-footer flex column (`display: flex; flex-direction: column` +
+  `.App-content { flex: 1 0 auto }`) so `.App-footer` always reaches the bottom of the viewport
+  on short pages instead of trailing right after the content, which otherwise left it visibly out
+  of step with the fixed `.App-sidebar` (which always spans header-to-viewport-bottom). Also adds
+  a `@desktop-hd` override for core's own reading-pane feature, which sets its own
+  `margin-left` on `.App-content`/`.App-footer` at a higher specificity than the sidebar's own
+  rule -- left alone, pinning the pane on a wide screen would silently undo the sidebar's offset.
 - Scrollbar -- violet thumb, matching the main site.
 
 Layout ideas (the `.Hero` banner treatment and `.sideNav` pill styling) are adapted from two
