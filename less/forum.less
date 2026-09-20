@@ -786,6 +786,29 @@ h1, h2, h3, h4 {
     }
   }
 
+  // Icon width isn't consistent across nav item sources: a plain LinkButton's icon is a
+  // FontAwesome glyph sized by font-size (core's own .Button-icon, ~14px), but flarum/tags adds
+  // its own TagLinkButton items (e.g. a specific tag's own link) using a fixed 16px .TagIcon
+  // swatch/dotted-square instead (tags' own common/TagIcon.less) -- close but not identical, and
+  // enough to visibly shift that row's label out of line with every plain nav row above it.
+  // Forcing every icon slot to the same fixed, centered box normalizes both cases so every
+  // row's label starts at the same x position regardless of which icon type renders inside it.
+  .Button-icon {
+    flex: 0 0 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  // Separator.js renders a bare `<li class="Dropdown-separator">` with no content of its own --
+  // flarum/tags adds one between its "Tags" link and the tag list itself (navItems()), which was
+  // rendering as invisible dead space here since nothing gave it a visible line.
+  li.Dropdown-separator {
+    height: 1px;
+    background: var(--deathfeed-dark-700);
+    margin: 0.375rem 0.75rem;
+  }
+
   li.active .LinkButton {
     color: var(--deathfeed-neon-blue);
     background-color: rgba(96, 165, 250, 0.15);
