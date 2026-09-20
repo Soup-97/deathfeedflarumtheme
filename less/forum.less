@@ -225,35 +225,14 @@ a {
                      linear-gradient(to bottom, rgba(13, 17, 23, 0.55) 0%, rgba(13, 17, 23, 0.85) 100%),
                      url('/assets/extensions/deathfeed-theme/hero-bg.png');
 
-  // hero-bg.png is 1671x930 (~1.8:1). A short-content hero (DiscussionHero/TagHero: just a tag
-  // pill + title, no badge/subtitle/stats) has nowhere near that aspect ratio at this max-width
-  // -- content-driven height alone (no min-height before this) left it around 150-180px tall
-  // against an up-to-1100px width, i.e. roughly 6-7:1. `cover` has to zoom in hard to fill a box
-  // that wide-and-short, so only a thin, heavily-magnified vertical sliver of the artwork around
-  // the centre ever shows -- the rest gets cropped off top and bottom. A min-height floor keeps
-  // that ratio closer to a normal banner shape (~4:1 on desktop) without touching the taller
-  // content-heavy homepage hero at all, since its own badge+headline+subtitle+stats content
-  // already exceeds this floor -- min-height only ever raises a shorter box, never shrinks a
-  // taller one. Centering flex added so shorter content still sits centered in the taller box
-  // instead of stacking at the top with dead space below (core's own Hero.less has no such
-  // centering -- height there is always exactly the content's own height, so it never needed
-  // any); .container keeps its own width/max-width and horizontal auto-centering as a flex item,
-  // unaffected by this.
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 280px;
-
   @media @tablet {
     max-width: @screen-tablet;
-    min-height: 220px;
   }
 
   @media @phone {
     max-width: calc(~"100% - 30px");
     margin-bottom: 15px;
     border-radius: 0.875rem;
-    min-height: 180px;
   }
 
   .container {
