@@ -1,6 +1,6 @@
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
-import ForumApplication from 'flarum/forum/ForumApplication';
+import type ForumApplication from 'flarum/forum/ForumApplication';
 import IndexPage from 'flarum/forum/components/IndexPage';
 import WelcomeHero from 'flarum/forum/components/WelcomeHero';
 
@@ -34,7 +34,18 @@ app.initializers.add('deathfeed-theme', () => {
   // navigation and footer -- still runs first; the sidebar node is inserted right before
   // .App-content so it reads first in the DOM (skip-link / tab order), even though
   // position:fixed in the CSS takes it out of the normal flow for painting.
-  extend(ForumApplication.prototype, 'mount', function () {
+  //
+  // `ForumApplication` itself is never registered in Flarum's runtime module registry -- core's
+  // autoExportLoader deliberately skips top-level admin/forum files except `app` (confirmed
+  // against flarum/core's own autoExportLoader.cjs, and against every core extension that
+  // references ForumApplication -- mentions/tags/realtime/gdpr/flags/messages/pusher -- which all
+  // `import type ForumApplication from 'flarum/forum/ForumApplication'` for typing only, never as
+  // a runtime value). A plain value import resolves to `undefined` at runtime, so
+  // `ForumApplication.prototype` throws ("deathfeed-theme failed to initialize: Cannot read
+  // properties of undefined (reading 'prototype')" -- confirmed live). `app` above is a real
+  // `ForumApplication` *instance* and is legitimately registered, so `app.constructor.prototype`
+  // reaches the exact same prototype without depending on the broken direct import.
+  extend((app.constructor as typeof ForumApplication).prototype, 'mount', function () {
     const appEl = document.getElementById('app');
     const contentEl = document.querySelector('.App-content');
     if (!appEl || !contentEl) return;
