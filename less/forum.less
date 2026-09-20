@@ -793,11 +793,30 @@ h1, h2, h3, h4 {
   // enough to visibly shift that row's label out of line with every plain nav row above it.
   // Forcing every icon slot to the same fixed, centered box normalizes both cases so every
   // row's label starts at the same x position regardless of which icon type renders inside it.
+  //
+  // This alone doesn't reach a TagLinkButton's own icon, though -- unlike a plain LinkButton
+  // (which passes its icon via Button's `icon` prop, rendering it as a direct sibling of the
+  // label), TagLinkButton passes its icon+label as `children` instead (its own linkItems()),
+  // which the base Button component (getButtonContent(), flarum/core's Button.tsx) wraps
+  // wholesale inside an extra .Button-label > .Button-labelText layer meant for plain text. That
+  // nests the tag's icon two levels deep rather than as a direct flex child, so `flex: 0 0 1rem`
+  // on it was a no-op there -- flex sizing only affects an element that is a flex item of its
+  // OWN direct parent, and .Button-labelText isn't a flex container by default. Making that
+  // inner wrapper a flex row itself (scoped to .TagLinkButton so plain LinkButtons, which don't
+  // have this extra nesting, are untouched) is what actually gives the nested icon a real flex
+  // context to size itself within -- confirmed by tracing TagLinkButton.linkItems() and
+  // Button.tsx's getButtonContent() against their actual compiled/source output.
   .Button-icon {
     flex: 0 0 1rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+  }
+
+  .TagLinkButton .Button-labelText {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
   // Separator.js renders a bare `<li class="Dropdown-separator">` with no content of its own --
