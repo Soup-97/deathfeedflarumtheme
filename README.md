@@ -7,7 +7,7 @@ frontend (`src/index.css`, `Layout.tsx`, `AlbionBackdrop.tsx`).
 
 Two parts:
 - **CSS/LESS** (`less/forum.less`) -- Flarum compiles this server-side, no build step.
-- **JS** (`js/src/forum/`) -- two things:
+- **JS** (`js/src/forum/` and `js/src/admin/`) -- three things:
   1. Replaces Flarum's default WelcomeHero with a custom hero that matches deathfeed.com's own
      homepage hero exactly (same headline/subtitle copy, same background image, same layout),
      including live "Kills Today" / "Loot Today" / "Active PvP Players Today" stats fetched
@@ -22,18 +22,29 @@ Two parts:
      Discussion", then Profile/Settings/Administration/Log Out -- one continuous column, fixed to
      the left edge of the viewport, full height, on every page (not just the index page).
      Like Pallet's own `Sidebar.js`/`App.less`, this mounts a standalone `.App-sidebar` DOM node
-     directly under `#app` (`extend(ForumApplication.prototype, 'mount', ...)` + `m.mount()`,
-     `js/src/forum/index.tsx`) rather than dropping into `IndexSidebar.prototype.items()`, and
-     gives `.App-content`/`.App-footer` a matching `margin-left` at desktop widths
-     (`less/forum.less`). Core's own default "New Discussion" button and nav dropdown
-     (`IndexPage`'s `.Page-sidebar`) are hidden at that same breakpoint rather than removed via
-     `items()`, so they still show up on tablet/phone where the fixed rail itself is hidden. No
-     dependency on `flarum/tags` (Pallet's version requires it; this reads whatever nav items are
-     actually registered via `IndexSidebar.prototype.navItems()`, so it still works without it).
+     directly under `#app` (`extend(app.constructor.prototype, 'mount', ...)` + `m.mount()`,
+     `js/src/forum/index.tsx` -- `app.constructor`, not a direct `ForumApplication` import: see
+     the comment there, `ForumApplication` itself is never registered in Flarum's runtime module
+     registry) rather than dropping into `IndexSidebar.prototype.items()`, and gives
+     `.App-content`/`.App-footer` a matching `margin-left` at desktop widths (`less/forum.less`).
+     Core's own default "New Discussion" button and nav dropdown (`IndexPage`'s `.Page-sidebar`)
+     are hidden at that same breakpoint rather than removed via `items()`, so they still show up
+     on tablet/phone where the fixed rail itself is hidden. No dependency on `flarum/tags`
+     (Pallet's version requires it; this reads whatever nav items are actually registered via
+     `IndexSidebar.prototype.navItems()`, so it still works without it).
+  3. An admin-configurable footer: `js/src/admin/extend.ts` adds a "Footer text" field to this
+     extension's own settings page (Admin > Extensions > Deathfeed Theme), `extend.php`'s
+     `Extend\Settings` serializes the saved value to the forum payload, and
+     `js/src/forum/components/DeathfeedFooter.tsx` (mounted via `override(Footer.prototype,
+     'view', ...)`, core's `Footer` is an empty extension point by default) renders it inside
+     `.App-footer` -- basic HTML (e.g. a link) is allowed, since footer content is admin-authored
+     and Flarum admins are already a fully trusted role. Empty by default (no placeholder text
+     actually shown until an admin sets one).
 
-  `js/dist/forum.js` is committed pre-built (`npm run build` was already run, and the compiled
-  output's externalized imports were checked against Flarum's actual current source tree), so
-  installing this extension only needs Composer -- no Node inside the Flarum container.
+  `js/dist/forum.js` and `js/dist/admin.js` are committed pre-built (`npm run build` was already
+  run, and the compiled output's externalized imports were checked against Flarum's actual
+  current source tree), so installing this extension only needs Composer -- no Node inside the
+  Flarum container.
 
 ## Installing on your running Flarum instance (Coolify / Docker)
 
@@ -70,7 +81,7 @@ php flarum cache:clear
 to be re-copied to the public assets directory on enable or on that command -- a bare
 `composer update` while the extension is already enabled doesn't reliably re-publish it.
 
-## Developing the JS (changing the hero)
+## Developing the JS (changing the hero, sidebar, or admin settings)
 
 ```sh
 cd js
@@ -78,9 +89,11 @@ npm install
 npm run build   # or `npm run dev` to watch
 ```
 
-Commit both `js/src/` and the rebuilt `js/dist/forum.js` -- the container installing this
-extension never runs `npm install`/`npm run build` itself, only Composer, so the compiled output
-has to already be in the repo.
+This builds both `js/dist/forum.js` and `js/dist/admin.js` in one pass (webpack picks up
+`js/forum.ts` and `js/admin.ts` as separate entry points automatically). Commit `js/src/` and
+both rebuilt `js/dist/*.js` files -- the container installing this extension never runs `npm
+install`/`npm run build` itself, only Composer, so the compiled output has to already be in the
+repo.
 
 ## What it touches
 
@@ -139,7 +152,7 @@ has to already be in the repo.
   the `.Hero`/`.container` wrapper so the existing rounded-card/radial-glow CSS applies
   automatically.
 - **`DeathfeedSidebar` (JS)** -- mounted as a standalone `.App-sidebar` node via
-  `extend(ForumApplication.prototype, 'mount', ...)` + `m.mount()` (`js/src/forum/index.tsx`),
+  `extend(app.constructor.prototype, 'mount', ...)` + `m.mount()` (`js/src/forum/index.tsx`),
   fixed to the left edge of the viewport on every page rather than dropped into
   `IndexSidebar.prototype.items()`. Renders one continuous column: avatar/name/join-date/
   post-discussion-counts (or a sign-up/log-in prompt for guests), the forum's own nav links
@@ -150,6 +163,12 @@ has to already be in the repo.
   `.App-sidebar` itself for the fixed rail's glass background/blur/border -- stat values in
   neon-blue, nav/account rows as rounded pills matching the header nav's own active-state
   treatment.
+- **`DeathfeedFooter` (JS)** -- overrides `Footer.prototype.view` (`js/src/forum/index.tsx`) to
+  render whatever an admin has set in Admin > Extensions > Deathfeed Theme > Footer text
+  (`js/src/admin/extend.ts` registers the setting, `extend.php`'s `Extend\Settings` serializes it
+  to the forum as `deathfeedFooterText`). Rendered via `m.trust()` so a link is possible; renders
+  nothing at all when the setting is empty. Styled via `.DeathfeedFooter*` classes -- centered,
+  muted text with a top border, matching the rest of the theme's dark palette.
 - Scrollbar -- violet thumb, matching the main site.
 
 Layout ideas (the `.Hero` banner treatment and `.sideNav` pill styling) are adapted from two

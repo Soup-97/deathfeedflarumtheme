@@ -780,3 +780,19 @@ h1, h2, h3, h4 {
     color: #f87171;
   }
 }
+
+/* ---- Admin-configurable footer (js/src/forum/components/DeathfeedFooter.tsx) -- rendered
+   inside core's own .App-footer, which already gets the fixed-sidebar's margin-left (see
+   .App-sidebar rules above), so this only needs its own spacing/typography. */
+.DeathfeedFooter {
+  padding: 2rem 0;
+  border-top: 1px solid var(--deathfeed-dark-700);
+  text-align: center;
+  color: var(--muted-color);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.DeathfeedFooter-content a {
+  color: var(--deathfeed-neon-blue);
+}
