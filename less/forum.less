@@ -424,6 +424,16 @@ a:hover > .Avatar,
   border-radius: var(--border-radius);
   transition: border-color 0.15s ease;
 
+  // Core deliberately widens this 20px and shifts it 20px left at @tablet-up (a "bleed" past
+  // the post padding -- Post.less's own @media @tablet-up block, margin-left: calc(0px -
+  // var(--post-padding)); width: calc(100% + var(--post-padding));, where --post-padding is
+  // 20px). That's invisible in stock Flarum since there's no visible card border to compare it
+  // against, but it's a real, visible misalignment against .Post's own bordered-card treatment
+  // above it (this theme's .Post rules) -- the reply box's edges stick out past every post
+  // card's edges. Pins it back to the exact same box every .Post above it uses.
+  margin-left: 0;
+  width: 100%;
+
   &:hover {
     border-color: rgba(96, 165, 250, 0.6);
   }
