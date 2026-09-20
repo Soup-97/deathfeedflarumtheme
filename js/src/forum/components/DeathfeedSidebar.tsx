@@ -3,39 +3,38 @@ import Component from 'flarum/common/Component';
 import Button from 'flarum/common/components/Button';
 import LinkButton from 'flarum/common/components/LinkButton';
 import Avatar from 'flarum/common/components/Avatar';
+import IndexSidebar from 'flarum/forum/components/IndexSidebar';
 import formatNumber from 'flarum/common/utils/formatNumber';
 import humanTime from 'flarum/common/utils/humanTime';
 import listItems from 'flarum/common/helpers/listItems';
 
-// A full replacement for IndexSidebar's default items() (js/src/forum/index.tsx removes
-// 'newDiscussion' and 'nav' and adds this single item instead), matching the actual structure
-// madeyedeer/flarum-pallet-theme's own sidebar has -- one continuous column: avatar/name/
-// join-date/stats, then the forum's own nav links (whatever IndexSidebar.navItems() has
-// registered -- "All Discussions" from core, plus "Tags"/anything else other installed
-// extensions add via their own extend(IndexSidebar.prototype, 'navItems', ...), rendered as
-// flat rows via listItems() instead of core's default dropdown so nothing installed here goes
-// missing), the "Start a Discussion" button, then Profile/Settings/Administration/Log Out --
-// not just the small user-stats card this started as.
+// Mounted directly as the site-wide fixed left column (js/src/forum/index.tsx, via
+// extend(ForumApplication.prototype, 'mount', ...) + m.mount()) rather than as an item inside
+// IndexSidebar's own ItemList -- so this renders on every page, matching
+// madeyedeer/flarum-pallet-theme's own Sidebar.js, not just the index page. One continuous
+// column: avatar/name/join-date/stats, then the forum's own nav links (whatever
+// IndexSidebar.navItems() has registered -- "All Discussions" from core, plus "Tags"/anything
+// else other installed extensions add via their own extend(IndexSidebar.prototype, 'navItems',
+// ...), rendered as flat rows via listItems() instead of core's default dropdown so nothing
+// installed here goes missing), the "Start a Discussion" button, then Profile/Settings/
+// Administration/Log Out.
 //
-// Deliberately still mounted via IndexSidebar.prototype.items() (js/src/forum/index.tsx)
-// rather than Pallet's own approach of mounting a whole separate site-wide sidebar DOM node in
-// ForumApplication.mount, which needs global .App-content margin/layout changes on every page --
-// this drops straight into the .sideNav column IndexSidebar already reserves space for.
+// navItems()/newDiscussionAction() are read from a throwaway IndexSidebar instance rather than
+// reimplemented here -- neither touches IndexSidebar's own `this.attrs`, just app.* globals
+// (confirmed against its actual source), and calling them fresh on every view() (rather than
+// snapshotting them once at mount time) keeps anything an extension registers, and login state,
+// live across redraws the same way core's own ItemList-driven items() is.
 //
 // Profile/Settings/Administration/Log Out here mirror core's own SessionDropdown.tsx items()
 // almost exactly (same icons, same translation keys, same app.forum.attribute('adminUrl') check,
 // same app.session.logout.bind(app.session) handler) -- verified against its actual source
 // rather than guessed, since this is the canonical place Flarum itself implements them.
-export interface DeathfeedSidebarAttrs {
-  navItems: unknown;
-  canStartDiscussion: boolean;
-  onStartDiscussion: () => void;
-}
-
-export default class DeathfeedSidebar extends Component<DeathfeedSidebarAttrs> {
+export default class DeathfeedSidebar extends Component {
   view() {
     const user = app.session.user;
     const adminUrl = app.forum.attribute('adminUrl');
+    const indexSidebar = new IndexSidebar();
+    const canStartDiscussion = app.forum.attribute('canStartDiscussion') || !user;
 
     return (
       <div className={user ? 'DeathfeedSidebar-user' : 'DeathfeedSidebar-guest'}>
@@ -44,17 +43,17 @@ export default class DeathfeedSidebar extends Component<DeathfeedSidebarAttrs> {
         <div className="DeathfeedSidebar-divider" />
 
         <nav className="DeathfeedSidebar-nav">
-          <ul>{listItems(this.attrs.navItems)}</ul>
+          <ul>{listItems(indexSidebar.navItems().toArray())}</ul>
         </nav>
 
         <Button
           icon="fas fa-edit"
           className="Button Button--primary Button--block DeathfeedSidebar-newDiscussion"
-          disabled={!this.attrs.canStartDiscussion}
-          onclick={this.attrs.onStartDiscussion}
+          disabled={!canStartDiscussion}
+          onclick={() => indexSidebar.newDiscussionAction().catch(() => {})}
         >
           {app.translator.trans(
-            `core.forum.index.${this.attrs.canStartDiscussion ? 'start_discussion_button' : 'cannot_start_discussion_button'}`
+            `core.forum.index.${canStartDiscussion ? 'start_discussion_button' : 'cannot_start_discussion_button'}`
           )}
         </Button>
 

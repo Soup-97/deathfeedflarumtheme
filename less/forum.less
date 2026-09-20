@@ -545,19 +545,61 @@ h1, h2, h3, h4 {
   }
 }
 
-/* ---- User stats sidebar (js/src/forum/components/UserStatsPanel.tsx) -- dropped into
-   IndexSidebar's own .sideNav column via IndexSidebar.prototype.items(). Widened from core's
-   190px default to match Pallet's own fuller-width sidebar (--sidebar-width is core's own CSS
-   custom property, consumed by .Page-sidebar/.sideNav at the @media(min-width:992px) desktop
-   breakpoint -- confirmed against the live compiled forum.css, since core's own value differs
-   by breakpoint (190px base, 260-280px on wide desktop) and this extension's CSS loads after
-   core's in Flarum's concatenated forum.css, so an unconditional override here always wins).
-   The card also gets a generous min-height so it reads as a real panel rather than a compact
-   list item. Deliberately NOT stretched to exactly match the discussion list's height (e.g.
-   height:100% on .sideNav > ul) -- core ties the sideNav's sticky-while-scrolling "affix"
-   behavior to that same <ul>, and forcing its height to track an arbitrarily long discussion
-   list would fight that (the sticky nav would grow as tall as the whole page on a busy forum,
-   pushing the Profile/Settings links far off-screen instead of keeping them reachable).
+/* ---- Site-wide fixed left sidebar (js/src/forum/components/DeathfeedSidebar.tsx) -- mounted
+   as a standalone node directly under #app (js/src/forum/index.tsx: extend(ForumApplication
+   .prototype, 'mount', ...) + m.mount()), docked to the left edge of the viewport on every page
+   instead of embedded in the index page's own .Page-sidebar column -- same approach
+   madeyedeer/flarum-pallet-theme's own Sidebar.js/App.less take (.App-sidebar { position:fixed;
+   left:0; ... } + .App-content { margin-left: ... }), restyled with Deathfeed's glass palette
+   instead of Pallet's flat white/dark card.
+
+   Hidden below @desktop-up (matches core's own @screen-desktop breakpoint, 992px) the same way
+   Pallet hides its own copy below its equivalent breakpoint -- there's no room for a permanent
+   280-300px rail on tablet/phone, and core's own drawer nav already covers that width. */
+.App-sidebar {
+  display: none;
+
+  @media @desktop-up {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0;
+    top: var(--header-height);
+    bottom: 0;
+    width: 300px;
+    overflow-y: auto;
+    padding: 1.5rem 1.25rem;
+    background: rgba(13, 17, 23, 0.75);
+    backdrop-filter: blur(16px);
+    border-right: 1px solid var(--deathfeed-dark-700);
+  }
+}
+
+@media @desktop-up {
+  .App-content,
+  .App-footer {
+    margin-left: 300px;
+  }
+
+  /* Core's own default IndexSidebar (New Discussion button + nav dropdown) would otherwise
+     duplicate everything .App-sidebar above already provides. Only IndexPage's copy is hidden --
+     UserPage's Settings/Notifications nav and DiscussionPage's own .Page-sidebar are unrelated
+     ItemLists that still need to render normally. Left visible below @desktop-up, where
+     .App-sidebar itself is hidden and this is the only "New Discussion"/nav control on the page. */
+  .IndexPage .Page-sidebar {
+    display: none;
+  }
+}
+
+/* Still used by UserPage's Settings/Notifications nav and DiscussionPage's own .Page-sidebar --
+   IndexPage's copy is hidden above in favor of the fixed global rail, but those other pages'
+   contextual sidebars are unrelated ItemLists and still render through this same --sidebar-width
+   custom property. Widened from core's 190px default to match Pallet's own fuller-width sidebar
+   (--sidebar-width is core's own CSS custom property, consumed by .Page-sidebar/.sideNav at the
+   @media(min-width:992px) desktop breakpoint -- confirmed against the live compiled forum.css,
+   since core's own value differs by breakpoint (190px base, 260-280px on wide desktop) and this
+   extension's CSS loads after core's in Flarum's concatenated forum.css, so an unconditional
+   override here always wins).
 
    Overriding --sidebar-width on :root doesn't work -- core sets it directly on .Page itself
    (`.Page{--sidebar-width:190px} @media(min-width:1100px){.Page{--sidebar-width:260px}}
@@ -572,19 +614,12 @@ h1, h2, h3, h4 {
 
 .DeathfeedSidebar-user,
 .DeathfeedSidebar-guest {
-  background: rgba(22, 27, 34, 0.6);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: var(--border-radius);
-  padding: 1.5rem 1.25rem;
-  margin-bottom: 0.75rem;
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  min-height: 320px;
 }
 
 .DeathfeedSidebar-user {
-  display: flex;
-  flex-direction: column;
   align-items: center;
   text-align: center;
 }

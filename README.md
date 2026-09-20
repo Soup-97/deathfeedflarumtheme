@@ -16,18 +16,20 @@ Two parts:
      extension entirely -- **disable/uninstall MagicSlider in Admin > Extensions** once this is
      live, since both override the same hero and having both active means whichever loads last wins.
   2. A full sidebar matching [madeyedeer/flarum-pallet-theme](https://github.com/madeyedeer/flarum-pallet-theme)'s
-     own: avatar, name, join date, and post/discussion counts (or a sign-up/log-in prompt for
-     guests) at the top, then the forum's own nav links (All Discussions, Tags, and anything else
-     installed extensions register), then "Start a Discussion", then Profile/Settings/
-     Administration/Log Out -- one continuous column instead of a small card wedged below core's
-     own controls. Replaces core's default "New Discussion" button and nav dropdown entirely
-     (`IndexSidebar.prototype.items()`) rather than sitting alongside them. Unlike Pallet's own
-     implementation, which mounts a whole separate site-wide sidebar DOM node and needs global
-     layout/margin changes on every page, this drops straight into the `.sideNav` column
-     `IndexSidebar` (Flarum 2.0's replacement for `IndexPage.sidebarItems()`, which no longer
-     exists) already renders on the index page -- no layout changes needed anywhere else, and no
+     own, including how it's mounted: avatar, name, join date, and post/discussion counts (or a
+     sign-up/log-in prompt for guests) at the top, then the forum's own nav links (All
+     Discussions, Tags, and anything else installed extensions register), then "Start a
+     Discussion", then Profile/Settings/Administration/Log Out -- one continuous column, fixed to
+     the left edge of the viewport, full height, on every page (not just the index page).
+     Like Pallet's own `Sidebar.js`/`App.less`, this mounts a standalone `.App-sidebar` DOM node
+     directly under `#app` (`extend(ForumApplication.prototype, 'mount', ...)` + `m.mount()`,
+     `js/src/forum/index.tsx`) rather than dropping into `IndexSidebar.prototype.items()`, and
+     gives `.App-content`/`.App-footer` a matching `margin-left` at desktop widths
+     (`less/forum.less`). Core's own default "New Discussion" button and nav dropdown
+     (`IndexPage`'s `.Page-sidebar`) are hidden at that same breakpoint rather than removed via
+     `items()`, so they still show up on tablet/phone where the fixed rail itself is hidden. No
      dependency on `flarum/tags` (Pallet's version requires it; this reads whatever nav items are
-     actually registered, so it still works without it).
+     actually registered via `IndexSidebar.prototype.navItems()`, so it still works without it).
 
   `js/dist/forum.js` is committed pre-built (`npm run build` was already run, and the compiled
   output's externalized imports were checked against Flarum's actual current source tree), so
@@ -136,13 +138,18 @@ has to already be in the repo.
   a separate JS bundle/origin). Styled via `.DeathfeedHero-*` classes in `less/forum.less`, reusing
   the `.Hero`/`.container` wrapper so the existing rounded-card/radial-glow CSS applies
   automatically.
-- **`DeathfeedSidebar` (JS)** -- extends `IndexSidebar.prototype.items()` (`js/src/forum/index.tsx`)
-  to replace core's default "New Discussion" button and nav dropdown with one continuous column:
-  avatar/name/join-date/post-discussion-counts (or a sign-up/log-in prompt for guests), the
-  forum's own nav links rendered as flat rows instead of a dropdown, "Start a Discussion", then
-  Profile/Settings/Administration/Log Out. Styled via `.DeathfeedSidebar-*` classes -- glass-card
-  matching every other panel in the theme, stat values in neon-blue, nav/account rows as rounded
-  pills matching the header nav's own active-state treatment.
+- **`DeathfeedSidebar` (JS)** -- mounted as a standalone `.App-sidebar` node via
+  `extend(ForumApplication.prototype, 'mount', ...)` + `m.mount()` (`js/src/forum/index.tsx`),
+  fixed to the left edge of the viewport on every page rather than dropped into
+  `IndexSidebar.prototype.items()`. Renders one continuous column: avatar/name/join-date/
+  post-discussion-counts (or a sign-up/log-in prompt for guests), the forum's own nav links
+  (read fresh from `IndexSidebar.prototype.navItems()` every render) as flat rows instead of a
+  dropdown, "Start a Discussion", then Profile/Settings/Administration/Log Out. Core's own
+  `.Page-sidebar` on the index page is hidden via CSS at the same desktop breakpoint the fixed
+  rail appears at, so nothing duplicates. Styled via `.DeathfeedSidebar-*` classes plus
+  `.App-sidebar` itself for the fixed rail's glass background/blur/border -- stat values in
+  neon-blue, nav/account rows as rounded pills matching the header nav's own active-state
+  treatment.
 - Scrollbar -- violet thumb, matching the main site.
 
 Layout ideas (the `.Hero` banner treatment and `.sideNav` pill styling) are adapted from two

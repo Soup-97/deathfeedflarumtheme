@@ -1,7 +1,7 @@
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
+import ForumApplication from 'flarum/forum/ForumApplication';
 import IndexPage from 'flarum/forum/components/IndexPage';
-import IndexSidebar from 'flarum/forum/components/IndexSidebar';
 import WelcomeHero from 'flarum/forum/components/WelcomeHero';
 
 import DeathfeedHero from './components/DeathfeedHero';
@@ -20,33 +20,29 @@ app.initializers.add('deathfeed-theme', () => {
   });
 
   // Full sidebar (avatar/stats, nav links, Start a Discussion, Profile/Settings/Admin/Log Out)
-  // -- dropped into IndexSidebar's own items() ItemList. `IndexPage.prototype.sidebarItems()`
-  // doesn't exist in Flarum 2.0 -- extending it was a silent no-op, which is why nothing
-  // appeared at first. 2.0 moved the whole left column out of IndexPage into its own
-  // IndexSidebar component (confirmed against its actual source), and `items()` -- not
-  // `sidebarItems()` -- is what core itself uses for the "New Discussion" button and nav
-  // dropdown.
+  // -- a fixed, full-height column docked to the left edge of the viewport on EVERY page, not
+  // just embedded in the index page's own .Page-sidebar column. This matches
+  // madeyedeer/flarum-pallet-theme's own actual approach (js/src/forum/index.js: extend(
+  // ForumApplication.prototype, 'mount', ...) creates a standalone .App-sidebar DOM node and
+  // mounts its Sidebar component into it directly with m.mount(), independent of any page's own
+  // ItemList) -- that was the actual ask (see less/forum.less's .App-sidebar rules for why the
+  // node has to be a direct child of #app rather than nested inside the header, and the
+  // .IndexPage .Page-sidebar hide rule that stops core's own default "New Discussion"/nav
+  // dropdown from duplicating this).
   //
-  // Removes core's own 'newDiscussion' button and 'nav' dropdown and folds equivalent
-  // functionality into DeathfeedSidebar itself, so the whole left column reads as one
-  // continuous panel (avatar -> nav links -> start discussion -> account links) instead of
-  // core's controls stacked above a separate small card -- matching the structure
-  // madeyedeer/flarum-pallet-theme's own sidebar has, which was the actual ask (a compact
-  // user-stats card wedged below the existing controls wasn't it).
-  extend(IndexSidebar.prototype, 'items', function (items: any) {
-    const canStartDiscussion = app.forum.attribute('canStartDiscussion') || !app.session.user;
+  // `extend` (not `override`) so core's own mount logic -- which itself mounts the header,
+  // navigation and footer -- still runs first; the sidebar node is inserted right before
+  // .App-content so it reads first in the DOM (skip-link / tab order), even though
+  // position:fixed in the CSS takes it out of the normal flow for painting.
+  extend(ForumApplication.prototype, 'mount', function () {
+    const appEl = document.getElementById('app');
+    const contentEl = document.querySelector('.App-content');
+    if (!appEl || !contentEl) return;
 
-    items.remove('newDiscussion');
-    items.remove('nav');
+    const sidebarContainer = document.createElement('div');
+    sidebarContainer.className = 'App-sidebar';
+    appEl.insertBefore(sidebarContainer, contentEl);
 
-    items.add(
-      'deathfeed-sidebar',
-      <DeathfeedSidebar
-        navItems={this.navItems().toArray()}
-        canStartDiscussion={canStartDiscussion}
-        onStartDiscussion={() => this.newDiscussionAction().catch(() => {})}
-      />,
-      100
-    );
+    m.mount(sidebarContainer, DeathfeedSidebar);
   });
 });
