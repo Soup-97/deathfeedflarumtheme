@@ -1,9 +1,11 @@
 import app from 'flarum/forum/app';
 import { extend, override } from 'flarum/common/extend';
 import type ForumApplication from 'flarum/forum/ForumApplication';
+import Footer from 'flarum/forum/components/Footer';
 import IndexPage from 'flarum/forum/components/IndexPage';
 import WelcomeHero from 'flarum/forum/components/WelcomeHero';
 
+import DeathfeedFooter from './components/DeathfeedFooter';
 import DeathfeedHero from './components/DeathfeedHero';
 import DeathfeedSidebar from './components/DeathfeedSidebar';
 
@@ -17,6 +19,14 @@ app.initializers.add('deathfeed-theme', () => {
   });
   override(WelcomeHero.prototype, 'view', function () {
     return <DeathfeedHero />;
+  });
+
+  // Admin-configurable footer (Admin > Extensions > Deathfeed Theme > Footer text,
+  // js/src/admin/extend.tsx) -- core's own Footer is an empty extension point by default
+  // (`view() { return null; }`), so overriding it outright is safe: there's no default content
+  // to preserve.
+  override(Footer.prototype, 'view', function () {
+    return <DeathfeedFooter />;
   });
 
   // Full sidebar (avatar/stats, nav links, Start a Discussion, Profile/Settings/Admin/Log Out)
